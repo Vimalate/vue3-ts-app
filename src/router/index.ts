@@ -1,25 +1,83 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+
+declare module 'vue-router' {
+  interface RouteMeta {
+    menu?: boolean
+    title?: string
+    icon?: string
+    auth?: boolean
+  }
+}
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: () => import('@/views/home/index.vue'),
+    redirect: '/sign',
+    meta: {
+      menu: true,
+      title: '考勤管理',
+      icon: 'document-copy',
+      auth: true,
+    },
+    children: [
+      {
+        path: 'sign',
+        name: 'sign',
+        component: () => import('@/views/sign/index.vue'),
+        meta: {
+          menu: true,
+          title: '在线打卡签到',
+          icon: 'calendar',
+          auth: true,
+        },
+      },
+      {
+        path: 'exception',
+        name: 'exception',
+        component: () => import('@/views/exception/index.vue'),
+        meta: {
+          menu: true,
+          title: '异常考勤查询',
+          icon: 'warning',
+          auth: true,
+        },
+      },
+      {
+        path: 'apply',
+        name: 'apply',
+        component: () => import('@/views/apply/index.vue'),
+        meta: {
+          menu: true,
+          title: '添加考勤审批',
+          icon: 'document-add',
+          auth: true,
+        },
+      },
+      {
+        path: 'check',
+        name: 'check',
+        component: () => import('@/views/check/index.vue'),
+        meta: {
+          menu: true,
+          title: '我的考勤审批',
+          icon: 'finished',
+          auth: true,
+        },
+      },
+    ],
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
+    path: '/login',
+    name: 'login',
+    component: () => import('@/views/login/index.vue'),
+  },
 ]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
+  routes,
 })
 
 export default router
