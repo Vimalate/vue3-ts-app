@@ -35,6 +35,32 @@ const routes: Array<RouteRecordRaw> = [
           icon: 'calendar',
           auth: true,
         },
+        async beforeEnter(to, from, next) {
+          const usersInfos = (store.state as StateAll).users.infos
+          const signsInfos = (store.state as StateAll).signs.infos
+          const newsInfo = (store.state as StateAll).news.info
+          if (_.isEmpty(signsInfos)) {
+            const res = await store.dispatch('signs/getTime', {
+              userid: usersInfos._id,
+            })
+            if (res.data.errcode === 0) {
+              store.commit('signs/updateInfos', res.data.infos)
+            } else {
+              return
+            }
+          }
+          if (_.isEmpty(newsInfo)) {
+            const res = await store.dispatch('news/getRemind', {
+              userid: usersInfos._id,
+            })
+            if (res.data.errcode === 0) {
+              store.commit('news/updateInfo', res.data.info)
+            } else {
+              return
+            }
+          }
+          next()
+        },
       },
       {
         path: 'exception',
@@ -45,6 +71,43 @@ const routes: Array<RouteRecordRaw> = [
           title: '异常考勤查询',
           icon: 'warning',
           auth: true,
+        },
+        async beforeEnter(to, from, next) {
+          const usersInfos = (store.state as StateAll).users.infos
+          const signsInfos = (store.state as StateAll).signs.infos
+          const checksApplyList = (store.state as StateAll).checks.applyList
+          const newsInfo = (store.state as StateAll).news.info
+          if (_.isEmpty(signsInfos)) {
+            const res = await store.dispatch('signs/getTime', {
+              userid: usersInfos._id,
+            })
+            if (res.data.errcode === 0) {
+              store.commit('signs/updateInfos', res.data.infos)
+            } else {
+              return
+            }
+          }
+          if (_.isEmpty(checksApplyList)) {
+            const res = await store.dispatch('checks/getApply', {
+              applicantid: usersInfos._id,
+            })
+            if (res.data.errcode === 0) {
+              store.commit('checks/updateApplyList', res.data.rets)
+            } else {
+              return
+            }
+          }
+          if (_.isEmpty(newsInfo)) {
+            const res = await store.dispatch('news/getRemind', {
+              userid: usersInfos._id,
+            })
+            if (res.data.errcode === 0) {
+              store.commit('news/updateInfo', res.data.info)
+            } else {
+              return
+            }
+          }
+          next()
         },
       },
       {
